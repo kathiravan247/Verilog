@@ -1,0 +1,46 @@
+module jk_ff(input clk,input rst,input j,input k,output reg q);
+always @(posedge clk or posedge rst)
+begin
+if(rst)
+q<=0;
+else
+case({j,k})
+2'b00: q<=q;
+2'b01: q<=0;
+2'b10: q<=1;
+2'b11: q<=~q;
+endcase
+end
+endmodule
+
+module sr_from_jk(input clk,input rst,input s,input r,output q);
+wire j,k;
+assign j = s & ~r;
+assign k = r & ~s;
+jk_ff u1(clk,rst,j,k,q);
+endmodule
+
+module tb;
+reg clk,rst,s,r;
+wire q;
+
+sr_from_jk dut(clk,rst,s,r,q);
+
+always #5 clk=~clk;
+
+initial
+begin
+clk=0;
+rst=1;
+s=0;
+r=0;
+#10 rst=0;
+
+#10 s=1; r=0;
+#10 s=0; r=0;
+#10 s=0; r=1;
+#10 s=0; r=0;
+#10 s=1; r=1;
+#20 $finish;
+end
+endmodule
