@@ -1,0 +1,43 @@
+//design
+module ring_counter(
+input clk,
+input rst,
+output reg [3:0] q
+);
+
+always @(posedge clk or posedge rst)
+begin
+if(rst)
+q <= 4'b0001;
+else
+  q <= {q[2:0], q[3]};   
+end
+
+endmodule
+
+//testbench
+module ring_counter_tb;
+  reg clk, rst;
+  wire [3:0] q;
+  
+  ring_counter uut(
+    .clk(clk),
+    .rst(rst),
+    .q(q)
+  );
+  
+  initial begin
+    $monitor("time=%0t | clk=%b, rst=%b, q=%b", $time, clk, rst, q);
+    
+    clk = 0;
+    rst = 1;
+    #5 rst = 0;
+    
+    #50 $finish;
+  end
+  always #5 clk = ~clk;
+endmodule
+    
+
+
+
